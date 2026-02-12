@@ -1,30 +1,58 @@
-const Grocery = require("../models/groceryModel");
+const { db } = require("../models/db");
 
-function listItems(req, res) {
-  res.json(Grocery.getAll());
+function makeId() {
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function addItem(req, res) {
-  const { name } = req.body;
-  if (!name || !name.trim()) {
-    return res.status(400).json({ error: "Name is required" });
+// GET /api/groceries (authenticated)
+function getAllGroceries(req, res) {
+  // Example authorization policy:
+  // - "admin" can see all groceries
+  // - "user" sees only their own
+  const isAdmin = req.user.role === "admin";
+
+  const items = isAdmin
+    ? db.groceries
+    : db.groceries.filter((g) => g.createdBy === req.user.id);
+
+  return res.json(items);
+}
+
+// POST /api/groceries (authenticated)
+function createGrocery(req, res) {
+  const { name } = req.body || {};
+  if (!name) return res.status(400).json({ message: "name is required" });
+
+  const item = {
+    id: makeId(),
+    name: String(name).trim(),
+    createdBy: req.user.id,
+    createdAt: new Date().toISOString(),
+  };
+
+  db.groceries.push(item);
+  return res.status(201).json(item);
+}
+
+// DELETE /api/groceries/:id
+// Example: only admin OR owner can delete
+function deleteGrocery(req, res) {
+  const { id } = req.params;
+
+  const idx = db.groceries.findIndex((g) => g.id === id);
+  if (idx === -1) return res.status(404).json({ message: "Not found" });
+
+  const item = db.groceries[idx];
+
+  const isAdmin = req.user.role === "admin";
+  const isOwner = item.createdBy === req.user.id;
+
+  if (!isAdmin && !isOwner) {
+    return res.status(403).json({ message: "Forbidden" });
   }
-  const created = Grocery.create({ name: name.trim() });
-  res.status(201).json(created);
+
+  db.groceries.splice(idx, 1);
+  return res.json({ ok: true });
 }
 
-function toggleItem(req, res) {
-  const id = Number(req.params.id);
-  const updated = Grocery.togglePurchased(id);
-  if (!updated) return res.status(404).json({ error: "Item not found" });
-  res.json(updated);
-}
-
-function deleteItem(req, res) {
-  const id = Number(req.params.id);
-  const ok = Grocery.remove(id);
-  if (!ok) return res.status(404).json({ error: "Item not found" });
-  res.status(204).send();
-}
-
-module.exports = { listItems, addItem, toggleItem, deleteItem };
+module.exports = { getAllGroceries, createGrocery, deleteGrocery };
