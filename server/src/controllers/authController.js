@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const { db } = require("../models/db");
-const { signToken } = require("../utils/jwt");
+const { signToken } = require("../../../client/src/utils/jwt");
 
 // simple id helper for in-memory usage
 function makeId() {
