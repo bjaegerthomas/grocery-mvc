@@ -1,16 +1,17 @@
-const express = require("express");
+const router = require("express").Router();
+const { requireAuth } = require("../middleware/requireAuth");
+
 const {
-  listItems,
-  addItem,
-  toggleItem,
-  deleteItem
+  getAllGroceries,
+  createGrocery,
+  deleteGrocery,
 } = require("../controllers/groceryController");
 
-const router = express.Router();
+// protect everything here
+router.use(requireAuth);
 
-router.get("/", listItems);
-router.post("/", addItem);
-router.patch("/:id/toggle", toggleItem);
-router.delete("/:id", deleteItem);
+router.get("/", getAllGroceries);
+router.post("/", createGrocery);
+router.delete("/:id", deleteGrocery);
 
 module.exports = router;
