@@ -1,285 +1,375 @@
-# 🛒 Grocery List MVC App  
-*A beginner-friendly full-stack project to understand MVC using React + Node/Express*
+🛒 Grocery List MVC App
 
----
+A full-stack MVC project using React + Node/Express with JWT Authentication
 
-## 🌱 Project Purpose
+🌱 Project Purpose
 
-This project is a **simple grocery list application** built to strengthen my understanding of:
+This project started as a simple grocery list app to better understand MVC architecture in a full-stack environment.
 
-- 🧠 MVC architecture
-- ⚛️ React front-end structure
-- 🚏 Express routing
-- 🎮 Controllers vs Models responsibilities
-- 🔄 Client–Server data flow
+It has since evolved into a properly structured application featuring:
 
-The app is intentionally simple *for now*, but designed to scale with:
+🧠 MVC architecture
 
-- 🔐 Authentication
-- 🗄️ Database integration
-- 🚀 Deployment
-- 🎨 UI improvements
+⚛️ React front-end structure
 
----
+🚏 Express routing
 
-## 🏗️ Tech Stack
+🔐 JWT authentication
 
-### Frontend
-- ⚛️ React
-- 📡 Fetch API
-- 🎯 Functional components + hooks
+🛡 Role-based authorization
 
-### Backend
-- 🟢 Node.js
-- 🚏 Express
-- 🧩 MVC structure
-- 💾 In-memory data storage (for now)
+🔄 Protected API routes
 
----
+📡 Centralized client-side API layer
 
-## 🧠 MVC Breakdown (How This App Uses MVC)
+💾 In-memory storage (intentionally, for learning architecture)
 
-### 📦 Model
+The goal of this project is to build strong architectural habits before introducing database complexity.
+
+🏗️ Tech Stack
+Frontend
+
+⚛️ React
+
+📡 Fetch API (abstracted via http utility)
+
+🎯 Functional components + hooks
+
+🔐 Token-based session storage
+
+Backend
+
+🟢 Node.js
+
+🚏 Express
+
+🔑 jsonwebtoken
+
+🔒 bcryptjs
+
+🧩 MVC structure
+
+💾 In-memory data storage
+
+🔐 Authentication & Authorization
+
+The app now supports:
+
+User registration
+
+User login
+
+JWT token issuance
+
+Protected routes via middleware
+
+Role-based access control
+
+Roles
+"user"  - Can only view and manage their own groceries
+"admin" - Can view all groceries
+
+Security Flow
+
+User registers or logs in
+
+Server verifies credentials
+
+Server signs a JWT containing:
+
+{ id, email, role }
+
+
+Client stores token in localStorage
+
+All protected routes require:
+
+Authorization: Bearer <token>
+
+🧠 MVC Breakdown
+📦 Model
+
 Responsible for:
-- Data storage
-- Business logic
-- Item structure
+
+Data storage
+
+Business logic
+
+Item structure
 
 Current Implementation:
-```
-server/src/models/groceryModel.js
-```
 
-Handles:
-- Create grocery item
-- Toggle purchased state
-- Delete item
-- Retrieve all items
+server/models/db.js
 
----
 
-### 🎮 Controller
+Because storage is in-memory, data resets on server restart.
+This is intentional for learning architecture before adding a database.
+
+🎮 Controller
+
 Responsible for:
-- Handling requests
-- Validating input
-- Calling model functions
-- Sending responses
 
-Location:
-```
-server/src/controllers/groceryController.js
-```
+Handling requests
+
+Validating input
+
+Calling model logic
+
+Sending responses
 
 Examples:
-- `listItems`
-- `addItem`
-- `toggleItem`
-- `deleteItem`
 
----
+authController.js
+groceryController.js
 
-### 🎨 View
-The user interface built with React.
 
-Location:
-```
-client/src/components/
-client/src/pages/
-```
+Handles:
+
+Register
+
+Login
+
+List groceries
+
+Create item
+
+Toggle item
+
+Delete item
+
+🛡 Middleware
+
+Authentication and authorization are handled via middleware:
+
+server/middleware/requireAuth.js
+server/middleware/requireRole.js
+
 
 Responsibilities:
-- Display grocery items
-- Handle user input
-- Trigger API requests
 
----
+Verify JWT
 
-### 🚏 Routes
-Maps URLs → Controllers
+Attach user to request
 
-Location:
-```
-server/src/routes/groceryRoutes.js
-```
+Restrict access based on role
 
----
+🎨 View (Frontend)
 
-## ✨ Current Features
+React handles:
 
-✅ Add grocery items  
-✅ Toggle purchased state  
-✅ Delete items  
-✅ MVC architecture separation  
-✅ REST API structure  
-✅ React component hierarchy  
+Displaying grocery items
 
----
+Managing authentication state
 
-## 📁 Folder Structure
+Triggering API calls
 
-```
+Protecting routes
+
+API calls are centralized in:
+
+client/api/http.js
+client/api/authApi.js
+client/api/groceryApi.js
+
+🚏 Routes
+
+Maps URLs to controllers:
+
+server/routes/authRoutes.js
+server/routes/groceryRoutes.js
+
+✨ Current Features
+
+✅ Add grocery items
+✅ Toggle purchased state
+✅ Delete items
+✅ MVC separation
+✅ JWT authentication
+✅ Role-based authorization
+✅ Protected routes
+✅ Centralized API request utility
+✅ RESTful API structure
+
+📁 Updated Folder Structure
 grocery-mvc/
 │
-├── client/            # React Frontend
+├── client/
+│   ├── api/
+│   │   ├── http.js
+│   │   ├── authApi.js
+│   │   └── groceryApi.js
 │   ├── components/
 │   ├── pages/
-│   ├── api/
 │   └── App.jsx
 │
-├── server/            # Express Backend
-│   ├── models/
+├── server/
 │   ├── controllers/
+│   │   ├── authController.js
+│   │   └── groceryController.js
+│   ├── middleware/
+│   │   ├── requireAuth.js
+│   │   └── requireRole.js
+│   ├── models/
+│   │   └── db.js
 │   ├── routes/
+│   │   ├── authRoutes.js
+│   │   └── groceryRoutes.js
+│   ├── utils/
+│   │   └── jwt.js
 │   └── app.js
 │
 └── README.md
-```
 
----
-
-## 🚀 Getting Started
-
-### 1️⃣ Clone the Repo
-```
-git clone <your-repo-url>
+🚀 Getting Started
+1️⃣ Clone the Repo
+git clone https://github.com/bjaegerthomas/grocery-mvc.git
 cd grocery-mvc
-```
 
----
-
-### 2️⃣ Start the Backend
-```
+2️⃣ Backend Setup
 cd server
 npm install
+
+
+Create a .env file inside /server:
+
+PORT=5000
+JWT_SECRET=your_super_secret_key
+JWT_EXPIRES_IN=7d
+
+
+Start server:
+
 npm run dev
-```
+
 
 Server runs at:
-```
+
 http://localhost:5000
-```
 
----
-
-### 3️⃣ Start the Frontend
-```
+3️⃣ Frontend Setup
 cd client
 npm install
 npm run dev
-```
 
----
+🔄 API Endpoints
+Authentication
+Method	Endpoint	Description
+POST	/api/auth/register	Register new user
+POST	/api/auth/login	Login user
+GET	/api/auth/me	Validate token
+Groceries (Protected)
 
-## 🔄 API Endpoints
+All routes below require JWT.
 
-| Method | Endpoint | Description |
-|--------|---------|------------|
-GET | `/api/groceries` | Fetch all items |
-POST | `/api/groceries` | Add new item |
-PATCH | `/api/groceries/:id/toggle` | Toggle purchased |
-DELETE | `/api/groceries/:id` | Remove item |
+Method	Endpoint	Description
+GET	/api/groceries	Fetch groceries (role-based visibility)
+POST	/api/groceries	Add new item
+PATCH	/api/groceries/:id/toggle	Toggle purchased
+DELETE	/api/groceries/:id	Delete item (admin or owner)
+🎯 Learning Outcomes
 
----
+This project strengthened my understanding of:
 
-## 🎯 Learning Goals
+MVC separation of concerns
 
-This project helps me practice:
+Middleware-driven authentication
 
-- 🧠 MVC separation
-- 🔁 Data flow in full-stack apps
-- 🧩 Component design
-- 📡 REST APIs
-- 🧼 Clean folder organization
-- 🛠️ Preparing for scalable architecture
+Role-based access control
 
----
+JWT token flow
 
-## 🔮 Planned Future Features
+Client-server communication
 
-### 🔐 Authentication
-- User accounts
-- Login/logout
-- JWT protection
-- User-specific grocery lists
+Scalable project structure
 
----
+Clean API layering
 
-### 🗄️ Database Integration
-- Replace in-memory storage
-- MongoDB or PostgreSQL
-- Persistent user data
-- Migrations
+Preparing for production architecture
 
----
+🔮 Next Steps
+🗄 Database Integration
 
-### 🎨 UI Improvements
-- Better styling
-- Animations
-- Mobile responsiveness
-- Dark mode 🌙
+Replace in-memory storage
 
----
+PostgreSQL or MongoDB
 
-### ⚡ Performance Enhancements
-- Optimistic updates
-- Caching
-- Pagination
+Persistent user data
 
----
+Migration strategy
 
-### 🚀 Deployment
-- Frontend hosting
-- Backend hosting
-- Environment variables
-- Production configs
+🎨 UI Improvements
 
----
+Better styling
 
-## 🧩 Lessons Learned So Far
+Mobile responsiveness
 
-✔️ Controllers should not contain business logic  
-✔️ Models should not handle requests  
-✔️ Views should remain presentation-focused  
-✔️ Separation makes scaling easier  
+Dark mode
 
----
+Loading states
 
-## 🤝 Contribution Ideas
+⚡ Performance Enhancements
 
-- Add categories for groceries 🥦
-- Add due dates 📅
-- Add priority levels 🚨
-- Search/filter 🔍
-- Drag & drop sorting 🎯
+Optimistic UI updates
 
----
+Pagination
 
-## 💡 Why This Project Matters
+Caching
 
-This app acts as a **foundation** for:
+🚀 Deployment
 
-- Authentication systems
-- Database integration
-- Larger React applications
-- API design patterns
-- Scalable backend structure
+Frontend hosting
 
----
+Backend hosting
 
-## 🧠 Author Notes
+Production environment configs
 
-This project was built as a learning exercise to better understand:
+🧩 Lessons Learned
 
-- MVC patterns
-- Full-stack communication
-- Clean architecture
-- Scalable code organization
+✔ Controllers should not contain business logic
+✔ Models should not handle HTTP requests
+✔ Middleware keeps authentication clean
+✔ Centralized API utilities improve scalability
+✔ MVC scales naturally when structured correctly
 
----
+💡 Why This Project Matters
 
-## 🥳 Final Thoughts
+This project demonstrates:
 
-Small projects with clear architecture build strong engineering habits.
+Real authentication flow
 
-Today: Grocery List  
-Tomorrow: Full-scale applications 🚀
+Clean MVC implementation
+
+Protected REST APIs
+
+Role-based access control
+
+Frontend API abstraction
+
+Scalable architecture foundations
+
+It represents the transition from:
+
+"A simple CRUD demo"
+
+to
+
+"A structured full-stack application with authentication and authorization."
+
+🧠 Author Notes
+
+This project was built to deepen my understanding of:
+
+Clean architecture
+
+Full-stack data flow
+
+JWT-based security
+
+Separation of concerns
+
+Building scalable systems incrementally
+
+Small projects with strong architecture build strong engineering habits.
+
+Today: Grocery List
+Tomorrow: Production systems 🚀
